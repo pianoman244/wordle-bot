@@ -1,3 +1,5 @@
+from definitions import NUM_LETTERS
+
 ''' 
 Simple object to store a guess and the information contained in it.
 '''
@@ -6,7 +8,6 @@ class Guess_Info:
 		self.word = word # word in the guess
 		self.info = info # info given by it (5-integer tuple with 0, 1, or 2)
 
-	
 	'''
 	Determine if word is possible based on information in guess_info alone
 	word: 5-letter word
@@ -14,7 +15,7 @@ class Guess_Info:
 	return: boolean
 	'''
 	def possible_word(self, word):
-		for i in range(5):
+		for i in range(NUM_LETTERS):
 			word_ch = word[i]
 			guess_ch = self.word[i]
 			ch_info = self.info[i]

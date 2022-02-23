@@ -5,15 +5,12 @@ information in valid_word() and seamlessly add information for new guesses in ad
 how good a guess with the basics of information theory in get_total_info(). See comments and docstrings!
 """
 
-
-import math
-from enum import Enum
-import random
+import math, random
 from types import SimpleNamespace
-from tqdm import tqdm, tqdm_notebook
+from tqdm import tqdm
 
-from wordle_configs import result_configs
 from guess_info import Guess_Info
+from definitions import WORD_LIST, NUM_LETTERS, result_configs
 
 class GuessNotPossibleException(Exception):
     """Exception raised when invalid guess info is supplied to add_info function.
@@ -28,8 +25,6 @@ class GuessNotPossibleException(Exception):
         self.message = message
         super().__init__(self.message)
 
-NUM_LETTERS = 5
-
 class Wordle_Information:
     def __init__(self):
 
@@ -37,7 +32,7 @@ class Wordle_Information:
         # 
         # green = [None, 'a', 'r', None, None]
         # yellow = {'s': {0, 3}, 'e': {0}}
-        # gray = {'e, q, u, l'}
+        # gray = {'e', 'q', 'u', 'l'}
         #
         # 'green' stores the index of all the letters currently discovered
         # 'yellow' is a dictionary where the keys are letters and the values are sets of indices in the word that the letter is not at
@@ -68,9 +63,6 @@ class Wordle_Information:
 
         # Arbitrary constant that is used to denote letters that have been exhaustively specified (see long comment in add_info)
         self.SPECIAL = 69
-
-        with open("words.txt") as f:
-            self.word_list = f.read().splitlines()
 
         # Store temporary added information for adding info from individual guesses
         # Should be stored minimally but thoroughly for easy and quick reversal
@@ -109,6 +101,7 @@ class Wordle_Information:
         self.temp_changes = SimpleNamespace(**self.temp_changes_dict)
 
         self.result_configs = result_configs()
+        self.word_list = WORD_LIST
 
 
     '''
@@ -174,8 +167,6 @@ class Wordle_Information:
             if word[i] in self.gray:
                 return False
 
-            
-        
         return True
     
     '''
@@ -411,16 +402,16 @@ class Wordle_Information:
     p * log_2(1/p) 
     '''
     def get_info(self, guess_info):
+        # if add_info returns false, there was a conflict; do nothing
+        info = None
         if self.add_info(guess_info, temporary=True):
             before = len(self.word_list) # word_list is not updated in temporary call to add_info
             after = self.count_possible_words()
+
+            # if there 
             if after > 0:
                 p = after/before
                 info = p * math.log2(1/p)
-            else:
-                info = None
-        else:
-            info = None
 
         self.remove_temporary_info()
 
