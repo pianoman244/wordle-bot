@@ -178,8 +178,22 @@ def play_wordle(word_list: List[str] = WORD_LIST):
         
         # get guess
         choice = input().lower()
-        while choice not in word_list or repeated_letters(choice):
-            choice = input("Please enter a valid 5-letter word with no repeated letters: ").lower()
+        while True:
+            if repeated_letters(choice):
+                choice = input("Please enter a 5-letter word with no repeated letters: ").lower()
+                continue
+            
+            if choice not in word_list:
+                yn = input("This word is not in the word list. Continue anyway? (Y/y/N/n): ")
+                while yn not in ['Y', 'y', 'N', 'n']:
+                    yn = input("Enter Y/y/N/n: ")
+
+                if yn in "Nn":
+                    choice = input("Please enter a 5-letter word with no repeated letters: ").lower()
+                    continue
+                else:
+                    break
+
         guesses += 1
 
         yn = input("Was your guess correct? (Y/y/N/n) ")
@@ -289,8 +303,7 @@ def play_wordle_simulated(game: Wordle_Game, word_list: List[str]=WORD_LIST, sho
     return guesses
 
 def main():
-    game = Wordle_Game("thems")
-    play_wordle_simulated(game, show_progress=True)
+    play_wordle()
 
 if __name__ == "__main__":
     main()
