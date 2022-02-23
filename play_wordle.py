@@ -168,7 +168,7 @@ def play_wordle(word_list: List[str] = WORD_LIST):
             n = int(n)
             if 0 < n:
                 print(" Analyzing good options ".center(40, "#")) 
-                best_words = best_guess([info], word_list, 5, n) # analyze the words
+                best_words = best_guess(info, word_list=word_list, num_choices=5, num_to_analyze=n) # analyze the words
 
                 print("Good options:")
                 for word in best_words:
@@ -179,10 +179,10 @@ def play_wordle(word_list: List[str] = WORD_LIST):
         # get guess
         choice = input().lower()
         while True:
-            if repeated_letters(choice):
-                choice = input("Please enter a 5-letter word with no repeated letters: ").lower()
+            if repeated_letters(choice) or len(choice) != NUM_LETTERS:
+                choice = input(f"Please enter a {NUM_LETTERS}-letter word with no repeated letters: ").lower()
                 continue
-            
+
             if choice not in word_list:
                 yn = input("This word is not in the word list. Continue anyway? (Y/y/N/n): ")
                 while yn not in ['Y', 'y', 'N', 'n']:
@@ -193,6 +193,8 @@ def play_wordle(word_list: List[str] = WORD_LIST):
                     continue
                 else:
                     break
+            else:
+                break
 
         guesses += 1
 
@@ -206,11 +208,11 @@ def play_wordle(word_list: List[str] = WORD_LIST):
             break
         
         # get input for info about guess
-        result = input("Enter the result of your guess, separated by spaces (0 is gray, 1 is yellow, 2 is green): ")
+        result = input("Enter the result of your guess, separated by single spaces (0 is gray, 1 is yellow, 2 is green): ").strip()
         while True:
             # first check if input is valid
             if not valid_guess_info_input(result):
-                result = input("Bad input. Try again: ")
+                result = input("Bad input. Try again: ").strip()
                 continue
         
             # next check if this causes any immediate conflicts
